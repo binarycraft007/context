@@ -6,15 +6,12 @@ pub fn build(b: *std.Build) void {
 
     const lib = b.addStaticLibrary(.{
         .name = "context",
+        .root_source_file = .{ .path = "src/context.zig" },
         .target = target,
         .optimize = optimize,
     });
     const t = lib.target_info.target;
     lib.linkLibC();
-    lib.addCSourceFile(.{
-        .file = .{ .path = "src/stack.c" },
-        .flags = &.{},
-    });
     switch (t.os.tag) {
         .windows => {
             switch (t.cpu.arch) {
@@ -57,12 +54,10 @@ pub fn build(b: *std.Build) void {
         },
         else => {},
     }
-    lib.addIncludePath(.{ .path = "include" });
-    lib.installHeadersDirectory("include", "");
     b.installArtifact(lib);
 
     const main_tests = b.addTest(.{
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = .{ .path = "src/context.zig" },
         .target = target,
         .optimize = optimize,
     });
